@@ -35,8 +35,6 @@ export async function scrapeWebpage(url: string): Promise<ScrapedData> {
       city: { title: cityTitle, desc: cityDesc },
     };
 
-    console.info(university);
-
     // Extract data from div.col-md-9.md-1 inside the container
     const mainContentData: MainContentItem[] = $(".container .col-md-9.md-1")
       .map((index, element) => {
