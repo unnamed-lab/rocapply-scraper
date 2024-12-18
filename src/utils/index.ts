@@ -36,6 +36,25 @@ export async function scrapeWebpage(url: string): Promise<ScrapedData> {
     };
 
     // Extract data from div.col-md-9.md-1 inside the container
+
+    // Extract the title (Master's in Applied Theatre)
+    const programTitle = $("h1 strong").text().trim();
+
+    // Extract the university name
+    const universityName = $(
+      "h1 a[style='text-transform: none;color: grey;font-size: 0.9em;']"
+    )
+      .text()
+      .trim();
+
+    // Extract program details from the table
+    const programDetails: any = {};
+    $("table > tbody tr").each((index, element) => {
+      const key = $(element).find("th").text().trim();
+      const value = $(element).find("td").text().trim();
+      programDetails[key] = value;
+    });
+
     const mainContentData: MainContentItem[] = $(".container .col-md-9.md-1")
       .map((index, element) => {
         const $element = $(element);
@@ -66,6 +85,11 @@ export async function scrapeWebpage(url: string): Promise<ScrapedData> {
 
     return {
       university,
+      program: {
+        title: programTitle,
+        university: universityName,
+        details: programDetails,
+      },
       mainContent: mainContentData,
     };
   } catch (error) {

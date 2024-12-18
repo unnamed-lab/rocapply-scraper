@@ -11,6 +11,12 @@ export interface UniversityItem {
   city: TContent;
 }
 
+export interface ProgramItem {
+  title: string;
+  university: string;
+  details: Record<string, string>;
+}
+
 export interface ListItem {
   type: string;
   items: string[];
@@ -24,5 +30,6 @@ export interface MainContentItem {
 
 export interface ScrapedData {
   university: UniversityItem;
+  program: ProgramItem;
   mainContent: MainContentItem[];
 }
