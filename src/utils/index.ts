@@ -1,10 +1,5 @@
 import * as cheerio from "cheerio";
-import {
-  MainContentItem,
-  ScrapedData,
-  SidebarItem,
-  UniversityItem,
-} from "../types";
+import { ScrapedData, UniversityItem } from "../types";
 
 export async function scrapeWebpage(url: string): Promise<ScrapedData> {
   try {
@@ -49,37 +44,13 @@ export async function scrapeWebpage(url: string): Promise<ScrapedData> {
 
     // Extract program details from the table
     const programDetails: any = {};
-    $("table > tbody tr").each((index, element) => {
-      const key = $(element).find("th").text().trim();
-      const value = $(element).find("td").text().trim();
-      programDetails[key] = value;
-    });
-
-    const mainContentData: MainContentItem[] = $(".container .col-md-9.md-1")
-      .map((index, element) => {
-        const $element = $(element);
-        return {
-          title: $element.find("h1, h2, h3, h4").first().text().trim(),
-          paragraphs: $element
-            .find("p")
-            .map((i, p) => $(p).text().trim())
-            .get(),
-          lists: $element
-            .find("ul, ol")
-            .map((i, list) => {
-              return {
-                type: list.name,
-                items: $(list)
-                  .find("li, table")
-                  .first()
-                  .map((j, li) => $(li).text().trim())
-                  .get(),
-              };
-            })
-            .get(),
-        };
-      })
-      .get();
+    $(".col-md-9.md-1 table > tbody tr")
+      .not("div")
+      .each((index, element) => {
+        const key = $(element).find("th").text().trim();
+        const value = $(element).find("td").text().trim();
+        programDetails[key] = value;
+      });
 
     console.info("Content fetched!\n");
 
@@ -90,7 +61,6 @@ export async function scrapeWebpage(url: string): Promise<ScrapedData> {
         university: universityName,
         details: programDetails,
       },
-      mainContent: mainContentData,
     };
   } catch (error) {
     console.error("Error scraping webpage:", error);
