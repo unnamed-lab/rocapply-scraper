@@ -41,7 +41,7 @@ This project is a web scraper designed to extract data from the Rocapply website
    ```
 3. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 
 ### Running the Project
@@ -51,18 +51,18 @@ This project is a web scraper designed to extract data from the Rocapply website
 To run the project in development mode:
 
 ```bash
-npm start
+pnpm start
 ```
 
 #### Build and Serve
 
 1. Build the project:
    ```bash
-   npm run build
+   pnpm run build
    ```
 2. Serve the production build:
    ```bash
-   npm run serve
+   pnpm run serve
    ```
 
 #### Access the API
