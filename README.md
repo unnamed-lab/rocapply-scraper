@@ -10,6 +10,7 @@ This project is a web scraper designed to extract data from the Rocapply website
   - [Installation](#installation)
   - [Running the Project](#running-the-project)
 - [Endpoints](#endpoints)
+- [Interface](#interface)
 - [Technologies Used](#technologies-used)
 - [Contributing](#contributing)
 - [License](#license)
@@ -88,7 +89,115 @@ Content-Type: application/json
 }
 ```
 
-### Live Server
+## Interface
+
+This section describes the interfaces and types used for the scraped data, providing a clear structure for managing university and program information.
+
+### Types and Interfaces
+
+#### TContent
+
+Represents a reusable type for textual content with a title and description.
+
+```typescript
+type TContent = {
+  title: string;
+  desc: string;
+};
+```
+
+#### TableRow
+
+Represents a single row in a table with dynamic keys and string values.
+
+```typescript
+type TableRow = {
+  [key: string]: string;
+};
+```
+
+#### UniversityItem
+
+Defines the structure for university-related information.
+
+```typescript
+interface UniversityItem {
+  school: TContent;
+  country: TContent;
+  city: TContent;
+}
+```
+
+#### ProgramItem
+
+Defines the structure for program-related information.
+
+```typescript
+interface ProgramItem {
+  title: string;
+  university: string;
+  details: Record<string, string>;
+}
+```
+
+#### ScrapedData
+
+Combines university and program information into a single structure.
+
+```typescript
+interface ScrapedData {
+  university: UniversityItem;
+  program: ProgramItem;
+}
+```
+
+### Example Usage
+
+#### Example 1: Representing a University
+
+```typescript
+const exampleUniversity: UniversityItem = {
+  school: {
+    title: "Mozarteum University Salzburg",
+    desc: "A prestigious university in Salzburg known for its arts and music programs.",
+  },
+  country: {
+    title: "Austria",
+    desc: "Located in Central Europe, Austria is known for its cultural heritage.",
+  },
+  city: {
+    title: "Salzburg",
+    desc: "A picturesque city famous for its baroque architecture and musical history.",
+  },
+};
+```
+
+#### Example 2: Representing a Program
+
+```typescript
+const exampleProgram: ProgramItem = {
+  title: "Master's in Applied Theatre: Artistic Theater Practice & Society",
+  university: "Mozarteum University Salzburg",
+  details: {
+    Degree: "Master's in Applied Theatre",
+    "Program Language": "English or German",
+    "Admission Semester": "Fall (October), Spring (March)",
+    "Start Date": "May Intake",
+    "Program Duration": "4 semesters",
+  },
+};
+```
+
+#### Example 3: Representing Scraped Data
+
+```typescript
+const exampleData: ScrapedData = {
+  university: exampleUniversity,
+  program: exampleProgram,
+};
+```
+
+## Live Server
 
 The API is also hosted at [https://rocapply-scraper.onrender.com](https://rocapply-scraper.onrender.com).
 
