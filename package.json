@@ -2,7 +2,7 @@
   "name": "rocapply-scraper",
   "version": "1.0.0",
   "type": "module",
-  "description": "rocapply website scraper server",
+  "description": "Rocapply Web Scraper is a TypeScript-based tool designed to automate the extraction of data from the Rocapply website. It provides a robust and lightweight API, built on Express, for efficient web scraping and data retrieval.",
   "main": "index.js",
   "scripts": {
     "start": "tsx src/server.ts",
