@@ -1,7 +1,14 @@
-
 export interface SidebarItem {
   title: string;
   content: string[];
+}
+
+type TContent = { title: string; desc: string };
+
+export interface UniversityItem {
+  school: TContent;
+  country: TContent;
+  city: TContent;
 }
 
 export interface ListItem {
@@ -16,6 +23,6 @@ export interface MainContentItem {
 }
 
 export interface ScrapedData {
-  sidebar: SidebarItem[];
+  university: UniversityItem;
   mainContent: MainContentItem[];
 }

@@ -1,5 +1,10 @@
 import * as cheerio from "cheerio";
-import { MainContentItem, ScrapedData, SidebarItem } from "../types";
+import {
+  MainContentItem,
+  ScrapedData,
+  SidebarItem,
+  UniversityItem,
+} from "../types";
 
 export async function scrapeWebpage(url: string): Promise<ScrapedData> {
   try {
@@ -14,18 +19,23 @@ export async function scrapeWebpage(url: string): Promise<ScrapedData> {
     const $ = cheerio.load(html);
 
     // Extract data from div.uni-sidebar-box
-    const sidebarData: SidebarItem[] = $(".uni-sidebar-box")
-      .map((index, element) => {
-        const $element = $(element);
-        return {
-          title: $element.find("h3").text().trim(),
-          content: $element
-            .find("ul li")
-            .map((i, li) => $(li).text().trim())
-            .get(),
-        };
-      })
-      .get();
+    const universityData = $(".uni-sidebar-box");
+    const subUniversity = $(universityData[0]);
+    const universityTitle = subUniversity.find("h4 > a").text();
+    const universityDesc = subUniversity.find("div > p > span").text();
+    const countryData = $(universityData[1]);
+    const countryTitle = countryData.find("h4").not("span").text();
+    const countryDesc = countryData.find("p").text();
+    const cityData = $(universityData[2]);
+    const cityTitle = cityData.find("h4").not("span").text();
+    const cityDesc = cityData.find("p").text();
+    const university: UniversityItem = {
+      school: { title: universityTitle, desc: universityDesc },
+      country: { title: countryTitle, desc: countryDesc },
+      city: { title: cityTitle, desc: cityDesc },
+    };
+
+    console.info(university);
 
     // Extract data from div.col-md-9.md-1 inside the container
     const mainContentData: MainContentItem[] = $(".container .col-md-9.md-1")
@@ -57,7 +67,7 @@ export async function scrapeWebpage(url: string): Promise<ScrapedData> {
     console.info("Content fetched!\n");
 
     return {
-      sidebar: sidebarData,
+      university,
       mainContent: mainContentData,
     };
   } catch (error) {
