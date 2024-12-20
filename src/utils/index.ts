@@ -1,5 +1,7 @@
 import * as cheerio from "cheerio";
 import { ScrapedData, UniversityItem } from "../types";
+import { formFetch } from "./fetchAPI";
+import { processHtmlArray } from "./htmlConversion";
 
 export async function scrapeWebpage(url: string): Promise<ScrapedData> {
   try {
@@ -66,4 +68,97 @@ export async function scrapeWebpage(url: string): Promise<ScrapedData> {
     console.error("Error scraping webpage:", error);
     throw error;
   }
+}
+
+export async function scrapeCountryWebpage(url: string): Promise<any> {
+  try {
+    console.log(`Fetching content from ${url}...\n`);
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const html = await response.text();
+    const $ = cheerio.load(html);
+
+    const options: { value: string; label: string }[] = $("#countryID option")
+      .map((i, option) => {
+        if (i === 0) return; // Skip the first option
+        const value = $(option).attr("value")?.trim() || ""; // Get and trim the value
+        const label = $(option).text().trim(); // Get and trim the label
+        return { value, label };
+      })
+      .get(); // Converts Cheerio object to an array
+
+    const universitiesHTML: any[] = await Promise.all(
+      options.map(async ({ value }, i) => {
+        // if (i === 0) return; // Skip the first option
+        const result = await formFetch(
+          "https://www.rocapply.com/AjaxProgramDataHome",
+          value
+        );
+
+        if (!result) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const resultHtml = String(result);
+        return resultHtml;
+      })
+    );
+
+    // const university = await processHtmlArray(universitiesHTML);
+
+    // TODO - Process the university data
+    // Format data to array as [{country: { value: '...', label: '...' }}]
+
+    // const reformat = options.map((option, index) => {
+    //   return {
+    //     country: option,
+    //     universities: university[index],
+    //   };
+    // });
+
+    // console.info(reformat);
+    // console.info(university);
+
+    console.info("Content fetched!\n");
+
+    return {
+      result: "",
+    };
+  } catch (error) {
+    console.error("Error scraping webpage:", error);
+    throw error;
+  }
+}
+
+export async function getUrlsAfterSelection(
+  htmlArray: string[],
+  country: string,
+  university: string,
+  program: string
+): Promise<string[]> {
+  const urls: string[] = [];
+
+  for (const html of htmlArray) {
+    const $ = cheerio.load(html);
+
+    // Find the form or element that contains the selection
+    const form = $("form"); // Adjust the selector as needed
+
+    if (form.length) {
+      const actionUrl = form.attr("action");
+      if (actionUrl) {
+        const url = new URL(actionUrl, "https://rocapply.com");
+        url.searchParams.set("country", country);
+        url.searchParams.set("university", university);
+        url.searchParams.set("program", program);
+        urls.push(url.toString());
+      }
+    }
+  }
+
+  return urls;
 }
